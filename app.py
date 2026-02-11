@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # Custom CSS para DEEP DARK ANALYTICS com UX/UI avançado
-st.markdown("""
+st.markdown(f"""
 <style>
     /* Dark theme global */
     .stApp {
