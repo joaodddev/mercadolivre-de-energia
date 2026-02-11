@@ -1,0 +1,5 @@
+data,unidade,consumo_mwh,preco_contratado_mwh,preco_cativo_mwh
+2024-01-01,Planta A,120,180,260
+2024-01-01,Planta B,95,175,260
+2024-02-01,Planta A,130,182,265
+2024-02-01,Planta B,90,178,265
