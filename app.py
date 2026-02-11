@@ -241,7 +241,7 @@ st.markdown("""
         <div>
             <div style='display: flex; align-items: center; gap: 16px; margin-bottom: 12px;'>
                 <h1 style='margin:0; font-size: 2.4rem; font-weight: 700; background: linear-gradient(135deg, #2ecc71, #3498db); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;'>
-                    ⚡ DEEP DARK ANALYTICS
+                    DEEP DARK ANALYTICS
                 </h1>
                 <span class='status-badge status-success' style='margin-left: 8px;'>● LIVE</span>
             </div>
