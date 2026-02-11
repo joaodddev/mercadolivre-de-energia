@@ -850,7 +850,7 @@ with tab4:
     st.plotly_chart(fig_sazonalidade, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ===== TAB 5: DADOS DETALHADOS =====
+# ===== TAB 5: DADOS DETALHADOS (CORRIGIDO) =====
 with tab5:
     st.markdown("## 🔍 DATAFRAME ANALYTICS")
     
@@ -867,35 +867,66 @@ with tab5:
     df_display['custo_cativo'] = df_display['custo_cativo'].apply(lambda x: f"R$ {x:,.2f}")
     df_display['economia'] = df_display['economia'].apply(lambda x: f"R$ {x:,.2f}")
     
-    df_display.columns = ['Data', 'Unidade', 'Consumo (MWh)', 'Preço Livre', 
-                          'Preço Cativo', 'Custo Livre', 'Custo Cativo', 
-                          'Economia', 'Mês', 'Ano/Mês', 'Economia %', 'Eficiência %']
+    # 🔴 CORREÇÃO: Verificar número exato de colunas e nomear corretamente
+    print("Número de colunas no df_display:", len(df_display.columns))  # Para debug
+    
+    # Opção 1: Nomear TODAS as colunas (recomendado)
+    df_display.columns = [
+        'Data', 
+        'Unidade', 
+        'Consumo (MWh)', 
+        'Preço Livre (R$/MWh)', 
+        'Preço Cativo (R$/MWh)', 
+        'Custo Livre (R$)', 
+        'Custo Cativo (R$)', 
+        'Economia (R$)', 
+        'Mês', 
+        'Ano/Mês', 
+        'Economia %', 
+        'Eficiência %'  # ⚠️ Esta coluna estava faltando!
+    ]
+    
+    # Opção 2: Selecionar apenas as colunas que quer exibir (mais seguro)
+    colunas_exibir = [
+        'Data', 
+        'Unidade', 
+        'Consumo (MWh)', 
+        'Preço Livre (R$/MWh)', 
+        'Preço Cativo (R$/MWh)', 
+        'Custo Livre (R$)', 
+        'Custo Cativo (R$)', 
+        'Economia (R$)', 
+        'Economia %', 
+        'Eficiência %'
+    ]
     
     # Filtro de pesquisa
     search_term = st.text_input("🔍 Pesquisar nos dados", placeholder="Digite unidade, período...")
     
+    # Selecionar apenas as colunas que queremos mostrar
+    df_display_filtered = df_display[colunas_exibir].copy()
+    
     if search_term:
-        mask = df_display[['Data', 'Unidade', 'Consumo (MWh)', 'Economia']].apply(
-            lambda row: row.astype(str).str.contains(search_term, case=False).any(), axis=1
+        mask = df_display_filtered.astype(str).apply(
+            lambda row: row.str.contains(search_term, case=False).any(), axis=1
         )
-        df_display_filtered = df_display[mask]
-    else:
-        df_display_filtered = df_display
+        df_display_filtered = df_display_filtered[mask]
     
     st.dataframe(
-        df_display_filtered[['Data', 'Unidade', 'Consumo (MWh)', 'Preço Livre', 'Preço Cativo', 
-                           'Custo Livre', 'Custo Cativo', 'Economia', 'Economia %', 'Eficiência %']],
+        df_display_filtered,
         use_container_width=True,
         hide_index=True,
         column_config={
             "Economia %": st.column_config.ProgressColumn(
                 "Economia %",
+                help="Percentual de economia em relação ao mercado cativo",
                 format="%.1f%%",
                 min_value=0,
                 max_value=100,
             ),
             "Eficiência %": st.column_config.ProgressColumn(
                 "Eficiência %",
+                help="Eficiência do preço contratado vs preço cativo",
                 format="%.1f%%",
                 min_value=0,
                 max_value=100,
