@@ -113,7 +113,7 @@ st.markdown("""
 # Carregar dados
 @st.cache_data
 def load_data():
-    df = pd.read_csv("energia (1).csv", parse_dates=["data"])
+    df = pd.read_csv("energia.csv", parse_dates=["data"])
     df["custo_livre"] = df["consumo_mwh"] * df["preco_contratado_mwh"]
     df["custo_cativo"] = df["consumo_mwh"] * df["preco_cativo_mwh"]
     df["economia"] = df["custo_cativo"] - df["custo_livre"]
