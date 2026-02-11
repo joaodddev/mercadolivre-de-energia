@@ -256,7 +256,7 @@ st.markdown("""
         </div>
     </div>
 </div>
-""".format(datetime=datetime), unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # Carregar dados com cache
 @st.cache_data(ttl=3600, show_spinner="🔄 Carregando dados energéticos...")
