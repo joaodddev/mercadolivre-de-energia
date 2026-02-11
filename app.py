@@ -27,10 +27,10 @@ st.markdown("""
     
     /* Animated Background */
     @keyframes gradientShift {
-        0% {{ background-position: 0% 50%; }}
-        50% {{ background-position: 100% 50%; }}
-        100% {{ background-position: 0% 50%; }}
-}}
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
     
     /* Smooth Transitions */
     * {
@@ -216,7 +216,6 @@ st.markdown("""
         background: linear-gradient(90deg, transparent, #2ecc71, #3498db, #2ecc71, transparent);
     }
 </style>
-""", unsafe_allow_html=True)
 
 <script>
     // Adiciona classe dark e detecta preferência de sistema
@@ -241,7 +240,7 @@ st.markdown("""
         <div>
             <div style='display: flex; align-items: center; gap: 16px; margin-bottom: 12px;'>
                 <h1 style='margin:0; font-size: 2.4rem; font-weight: 700; background: linear-gradient(135deg, #2ecc71, #3498db); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;'>
-                    DEEP DARK ANALYTICS
+                    ⚡ DEEP DARK ANALYTICS
                 </h1>
                 <span class='status-badge status-success' style='margin-left: 8px;'>● LIVE</span>
             </div>
@@ -257,12 +256,12 @@ st.markdown("""
         </div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+""".format(datetime=datetime), unsafe_allow_html=True)
 
 # Carregar dados com cache
 @st.cache_data(ttl=3600, show_spinner="🔄 Carregando dados energéticos...")
 def load_data():
-    df = pd.read_csv("energia.csv", parse_dates=["data"])
+    df = pd.read_csv("energia (1).csv", parse_dates=["data"])
     df["custo_livre"] = df["consumo_mwh"] * df["preco_contratado_mwh"]
     df["custo_cativo"] = df["consumo_mwh"] * df["preco_cativo_mwh"]
     df["economia"] = df["custo_cativo"] - df["custo_livre"]
