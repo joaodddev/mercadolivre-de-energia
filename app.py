@@ -858,7 +858,17 @@ with tab5:
     st.markdown('<div class="chart-title">📋 DADOS COMPLETOS • DETALHAMENTO</div>', unsafe_allow_html=True)
     
     # Formatar dados para exibição
+    df_display = df_filtro.copy()# ===== TAB 5: DADOS DETALHADOS (VERSÃO 100% CORRIGIDA) =====
+with tab5:
+    st.markdown("## 🔍 DATAFRAME ANALYTICS")
+    
+    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
+    st.markdown('<div class="chart-title">📋 DADOS COMPLETOS • DETALHAMENTO</div>', unsafe_allow_html=True)
+    
+    # Formatar dados para exibição
     df_display = df_filtro.copy()
+    
+    # Formatar as colunas para exibição
     df_display['data'] = df_display['data'].dt.strftime('%Y-%m-%d')
     df_display['consumo_mwh'] = df_display['consumo_mwh'].apply(lambda x: f"{x:,.0f}")
     df_display['preco_contratado_mwh'] = df_display['preco_contratado_mwh'].apply(lambda x: f"R$ {x:,.2f}")
@@ -867,27 +877,30 @@ with tab5:
     df_display['custo_cativo'] = df_display['custo_cativo'].apply(lambda x: f"R$ {x:,.2f}")
     df_display['economia'] = df_display['economia'].apply(lambda x: f"R$ {x:,.2f}")
     
-    # 🔴 CORREÇÃO: Verificar número exato de colunas e nomear corretamente
-    print("Número de colunas no df_display:", len(df_display.columns))  # Para debug
+    # 🔴 CORREÇÃO DEFINITIVA: NÃO USAR df_display.columns = [...]
+    # Em vez disso, criar um novo DataFrame com as colunas renomeadas
     
-    # Opção 1: Nomear TODAS as colunas (recomendado)
-    df_display.columns = [
-        'Data', 
-        'Unidade', 
-        'Consumo (MWh)', 
-        'Preço Livre (R$/MWh)', 
-        'Preço Cativo (R$/MWh)', 
-        'Custo Livre (R$)', 
-        'Custo Cativo (R$)', 
-        'Economia (R$)', 
-        'Mês', 
-        'Ano/Mês', 
-        'Economia %', 
-        'Eficiência %'  # ⚠️ Esta coluna estava faltando!
-    ]
+    # Dicionário de renomeação
+    rename_dict = {
+        'data': 'Data',
+        'unidade': 'Unidade',
+        'consumo_mwh': 'Consumo (MWh)',
+        'preco_contratado_mwh': 'Preço Livre (R$/MWh)',
+        'preco_cativo_mwh': 'Preço Cativo (R$/MWh)',
+        'custo_livre': 'Custo Livre (R$)',
+        'custo_cativo': 'Custo Cativo (R$)',
+        'economia': 'Economia (R$)',
+        'mes': 'Mês',
+        'ano_mes': 'Ano/Mês',
+        'economia_percentual': 'Economia %',
+        'eficiencia': 'Eficiência %'
+    }
     
-    # Opção 2: Selecionar apenas as colunas que quer exibir (mais seguro)
-    colunas_exibir = [
+    # Aplicar renomeação de forma segura
+    df_display = df_display.rename(columns=rename_dict)
+    
+    # Selecionar apenas as colunas que queremos mostrar
+    colunas_para_exibir = [
         'Data', 
         'Unidade', 
         'Consumo (MWh)', 
@@ -900,18 +913,26 @@ with tab5:
         'Eficiência %'
     ]
     
+    # Verificar se todas as colunas existem
+    colunas_existentes = [col for col in colunas_para_exibir if col in df_display.columns]
+    
+    if len(colunas_existentes) != len(colunas_para_exibir):
+        st.warning(f"⚠️ Algumas colunas não foram encontradas: {set(colunas_para_exibir) - set(colunas_existentes)}")
+    
+    # Filtrar apenas colunas existentes
+    df_display_filtered = df_display[colunas_existentes].copy()
+    
     # Filtro de pesquisa
     search_term = st.text_input("🔍 Pesquisar nos dados", placeholder="Digite unidade, período...")
     
-    # Selecionar apenas as colunas que queremos mostrar
-    df_display_filtered = df_display[colunas_exibir].copy()
-    
     if search_term:
+        # Aplicar filtro apenas em colunas de texto
         mask = df_display_filtered.astype(str).apply(
             lambda row: row.str.contains(search_term, case=False).any(), axis=1
         )
         df_display_filtered = df_display_filtered[mask]
     
+    # Exibir dataframe
     st.dataframe(
         df_display_filtered,
         use_container_width=True,
@@ -942,7 +963,9 @@ with tab5:
     with col_stats1:
         st.metric("Total de Registros", len(df_filtro))
     with col_stats2:
-        st.metric("Período Analisado", f"{df_filtro['data'].min().strftime('%d/%m/%Y')} - {df_filtro['data'].max().strftime('%d/%m/%Y')}")
+        periodo_inicio = df_filtro['data'].min().strftime('%d/%m/%Y')
+        periodo_fim = df_filtro['data'].max().strftime('%d/%m/%Y')
+        st.metric("Período Analisado", f"{periodo_inicio} - {periodo_fim}")
     with col_stats3:
         st.metric("Unidades Ativas", len(df_filtro['unidade'].unique()))
     
